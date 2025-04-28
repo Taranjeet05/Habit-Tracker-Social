@@ -5,6 +5,8 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import { connectDB } from "./config/mongoose-connection.js";
+connectDB();
 
 //  __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
