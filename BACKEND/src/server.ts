@@ -7,6 +7,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./config/mongoose-connection.js";
 connectDB();
+import debug from 'debug';
+const log = debug("app:server")
 
 //  __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -30,5 +32,5 @@ app.get("/", (req: Request, res: Response) => {
 // Server setup
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  log(`Server running on port ${PORT}`);
 });
