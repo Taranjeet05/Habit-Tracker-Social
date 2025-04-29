@@ -1,0 +1,61 @@
+import mongoose, { Schema } from "mongoose";
+
+const habitSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      require: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      trim: true,
+    },
+    color: {
+      type: String,
+      enum: ["red", "yellow", "green"],
+      default: "green",
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    frequency: {
+      type: String,
+      enum: ["daily", "weekly", "monthly", "custom"],
+      default: "daily",
+    },
+    customFrequency: {
+      days: [Number], // For custom frequency: [0,2,4] for Sunday, Tuesday, Thursday
+      times: Number, // How many times per period
+    },
+    reminders: {
+      enabled: {
+        type: Boolean,
+        default: false,
+      },
+      time: {
+        type: String,
+        default: "09:00", // Format: HH:MM in 24h
+      },
+    },
+    startDate: {
+      type: Date,
+      default: Date.now,
+    },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
+    visibility: {
+      type: String,
+      enum: ["private", "friends", "public"],
+      default: "private",
+    },
+  },
+  { timestamps: true }
+);
+
+const Habit = mongoose.models.Habit || mongoose.model("Habit", habitSchema);
+export default Habit;
