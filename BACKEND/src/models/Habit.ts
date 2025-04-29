@@ -5,7 +5,7 @@ const habitSchema = new mongoose.Schema<IHabit>(
   {
     title: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
     },
     description: {
