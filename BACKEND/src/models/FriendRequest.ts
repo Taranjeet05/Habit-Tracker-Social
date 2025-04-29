@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import { IFriendRequest } from "../types/index.js";
 
-const friendRequestSchema = new mongoose.Schema(
+const friendRequestSchema = new mongoose.Schema<IFriendRequest>(
   {
     sender: {
       type: Schema.Types.ObjectId,

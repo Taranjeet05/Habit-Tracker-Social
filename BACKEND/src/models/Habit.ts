@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import { IHabit } from "../types/index.js";
 
-const habitSchema = new mongoose.Schema(
+const habitSchema = new mongoose.Schema<IHabit>(
   {
     title: {
       type: String,

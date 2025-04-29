@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import { INotification } from "../types/index.js";
 
-const notificationSchema = new mongoose.Schema(
+const notificationSchema = new mongoose.Schema<INotification>(
   {
     recipient: {
       type: Schema.Types.ObjectId,

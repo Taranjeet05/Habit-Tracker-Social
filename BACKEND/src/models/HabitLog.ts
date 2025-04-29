@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import { IHabitLog } from "../types/index.js";
 
-const HabitLogSchema = new Schema(
+const HabitLogSchema = new Schema<IHabitLog>(
   {
     habit: {
       type: Schema.Types.ObjectId,

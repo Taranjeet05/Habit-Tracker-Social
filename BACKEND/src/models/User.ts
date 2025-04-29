@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import { IUser } from "../types/index.js";
 
-const userSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema<IUser>(
   {
     userName: {
       type: String,
