@@ -26,8 +26,8 @@ export interface IHabit extends MongoDBDocument {
   user: Types.ObjectId;
   frequency: "daily" | "weekly" | "monthly" | "custom";
   customFrequency?: {
-    days: number[];
-    times: number;
+    days?: number[];
+    times?: number;
   };
   reminders: {
     enabled: boolean;

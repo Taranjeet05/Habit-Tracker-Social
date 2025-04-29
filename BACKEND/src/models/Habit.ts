@@ -28,8 +28,16 @@ const habitSchema = new mongoose.Schema<IHabit>(
       default: "daily",
     },
     customFrequency: {
-      days: [Number], // For custom frequency: [0,2,4] for Sunday, Tuesday, Thursday
-      times: Number, // How many times per period
+      customFrequency: {
+        days: {
+          type: [Number],
+          default: [],
+        },
+        times: {
+          type: Number, // How many times per period
+          default: 1,
+        },
+      },
     },
     reminders: {
       enabled: {
