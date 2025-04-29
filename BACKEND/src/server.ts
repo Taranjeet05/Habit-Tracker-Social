@@ -7,8 +7,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./config/mongoose-connection.js";
 connectDB();
-import debug from 'debug';
-const log = debug("app:server")
+import debug from "debug";
+const log = debug("app:server");
 
 //  __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
