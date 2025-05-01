@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
 const router = express.Router();
-import { registerUser } from "../controllers/usersController.js";
+import { loginUser, registerUser } from "../controllers/usersController.js";
+
+// Endpoint -> "/api/users"
 
 // Test route
 router.get("/", (req: Request, res: Response) => {
@@ -9,5 +11,8 @@ router.get("/", (req: Request, res: Response) => {
 
 // User registration route
 router.post("/register", registerUser);
+
+// User login route
+router.post("/login", loginUser);
 
 export default router;
