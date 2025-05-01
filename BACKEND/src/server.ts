@@ -16,6 +16,7 @@ import habitLogsRouter from "./routes/habitLogsRouter.js";
 import friendRequestsRouter from "./routes/friendRequestsRouter.js";
 import notificationsRouter from "./routes/notificationsRouter.js";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
 
 //  __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -28,6 +29,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Static files (create a public directory in your backend)
 app.use(express.static(path.join(__dirname, "public")));
