@@ -15,6 +15,7 @@ import habitsRouter from "./routes/habitsRouter.js";
 import habitLogsRouter from "./routes/habitLogsRouter.js";
 import friendRequestsRouter from "./routes/friendRequestsRouter.js";
 import notificationsRouter from "./routes/notificationsRouter.js";
+import helmet from "helmet";
 
 //  __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +24,7 @@ const __dirname = path.dirname(__filename);
 const app: Application = express();
 
 // Middleware
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
