@@ -14,7 +14,7 @@ export const registerUser = async (
     // Zod validation
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ errors: parsed.error.flatten().fieldErrors });
+      res.status(409).json({ errors: parsed.error.flatten().fieldErrors });
       return;
     }
     // Check if user already exists
