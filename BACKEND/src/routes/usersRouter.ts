@@ -4,7 +4,7 @@ import { registerUser } from "../controllers/usersController.js";
 
 // Test route
 router.get("/", (req: Request, res: Response) => {
-  res.send("Hello form the Users Router");
+  res.send("Hello from the Users Router");
 });
 
 // User registration route

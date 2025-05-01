@@ -6,22 +6,23 @@ import { registerSchema } from "../validations/user.schema.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/genrateToken.js";
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     // Zod validation
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res
-        .status(400)
-        .json({ errors: parsed.error.flatten().fieldErrors });
+      res.status(400).json({ errors: parsed.error.flatten().fieldErrors });
+      return;
     }
     // Check if user already exists
     const { userName, email, password } = parsed.data;
     const existingUser = await User.findOne({ $or: [{ userName }, { email }] });
     if (existingUser) {
-      return res
-        .status(401)
-        .json({ message: "UserName or Email already in use." });
+      res.status(401).json({ message: "UserName or Email already in use." });
+      return;
     }
     // Hash password
     const hashPassword = await bcrypt.hash(password, 10);
@@ -33,7 +34,12 @@ export const registerUser = async (req: Request, res: Response) => {
     });
     // Create JWT token
     const token = generateToken(newUser);
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 86400000, // 1 day
+    });
     // Send response
     res.status(201).json({
       message: "User registered successfully 🎉",
@@ -48,6 +54,9 @@ export const registerUser = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     log("Error during user registration:", error.message);
-    throw new Error("User registration failed");
+    res.status(500).json({
+      message: "Registration Failed",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
