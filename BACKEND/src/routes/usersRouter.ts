@@ -4,6 +4,7 @@ import {
   getUserById,
   loginUser,
   registerUser,
+  updateUser,
 } from "../controllers/usersController.js";
 import { authenticateUser } from "../middlewares/authenticateUser.js";
 
@@ -16,5 +17,6 @@ router.get("/", (req: Request, res: Response) => {
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/:id", authenticateUser, getUserById);
+router.patch("/:id", authenticateUser, updateUser);
 
 export default router;
