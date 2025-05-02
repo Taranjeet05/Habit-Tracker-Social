@@ -16,3 +16,12 @@ export const loginSchema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
+
+export const updateUserSchema = z.object({
+  theme: z.enum(["light", "dark", "system"]).optional(),
+  emailNotification: z.boolean().optional(),
+  profileImage: z.string().optional(),
+  friendRequestNotifications: z.boolean().optional(),
+  friendActivityNotifications: z.boolean().optional(),
+  friendactivity: z.boolean().optional(),
+});
