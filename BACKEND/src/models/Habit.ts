@@ -7,6 +7,7 @@ const habitSchema = new mongoose.Schema<IHabit>(
       type: String,
       required: true,
       trim: true,
+      minlength: 3,
     },
     description: {
       type: String,
@@ -14,7 +15,7 @@ const habitSchema = new mongoose.Schema<IHabit>(
     },
     color: {
       type: String,
-      enum: ["red", "yellow", "green"],
+      enum: ["Green", "Blue", "Purple", "Teal", "Orange", "Red", "Yellow"],
       default: "green",
     },
     user: {
@@ -28,15 +29,13 @@ const habitSchema = new mongoose.Schema<IHabit>(
       default: "daily",
     },
     customFrequency: {
-      customFrequency: {
-        days: {
-          type: [Number],
-          default: [],
-        },
-        times: {
-          type: Number, // How many times per period
-          default: 1,
-        },
+      days: {
+        type: [Number],
+        default: [],
+      },
+      times: {
+        type: Number, // How many times per period
+        default: 1,
       },
     },
     reminders: {
