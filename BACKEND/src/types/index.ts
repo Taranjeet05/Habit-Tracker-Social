@@ -24,7 +24,7 @@ export interface IUser extends MongoDBDocument {
 export interface IHabit extends MongoDBDocument {
   title: string;
   description?: string;
-  color: "red" | "yellow" | "green";
+  color: "green" | "blue" | "purple" | "teal" | "orange" | "red" | "yellow";
   user: Types.ObjectId;
   frequency: "daily" | "weekly" | "monthly" | "custom";
   customFrequency?: {
