@@ -16,6 +16,8 @@ export interface IUser extends MongoDBDocument {
   lastLogin: Date;
   emailNotification: boolean;
   theme: "light" | "dark" | "system";
+  friendRequestNotifications: boolean;
+  friendActivityNotifications: boolean;
 }
 
 // Habit

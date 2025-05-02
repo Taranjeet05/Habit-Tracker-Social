@@ -46,6 +46,14 @@ const userSchema = new mongoose.Schema<IUser>(
       enum: ["light", "dark", "system"],
       default: "system",
     },
+    friendRequestNotifications: {
+      type: Boolean,
+      default: true,
+    },
+    friendActivityNotifications: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
