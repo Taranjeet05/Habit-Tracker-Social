@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 const router = express.Router();
 import {
   getUserById,
+  getUserFriends,
   loginUser,
   registerUser,
   updateUser,
@@ -18,5 +19,6 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/:id", authenticateUser, getUserById);
 router.patch("/:id", authenticateUser, updateUser);
+router.get("/:id/friends", authenticateUser, getUserFriends);
 
 export default router;

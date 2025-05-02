@@ -10,6 +10,7 @@ import {
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/genrateToken.js";
 
+// Create a new user
 export const registerUser = async (
   req: Request,
   res: Response
@@ -65,6 +66,7 @@ export const registerUser = async (
   }
 };
 
+// Authenticate user
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   try {
     // Zod validation
@@ -191,6 +193,36 @@ export const updateUser = async (
     log("Error to update", errorMessage);
     res.status(500).json({
       message: "Failed to update Profile",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
+
+// List user's friends
+export const getUserFriends = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.params.id;
+    const findUser = await User.findById(userId)
+      .select("-password")
+      .populate("friends");
+
+    if (!findUser) {
+      res.status(404).json({ message: "User Not Found" });
+      return;
+    }
+
+    res.status(200).json({
+      message: "All your friends",
+      user: findUser,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error finding the friend list", errorMessage);
+    res.status(500).json({
+      message: "Failed to access the Friend List",
       error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
