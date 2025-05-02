@@ -117,3 +117,37 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     });
   }
 };
+
+// Get user profile by ID
+export const getUserById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // Find user by id from db
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    // Send user data
+    res.status(200).json({
+      message: "User found",
+      user: {
+        id: user._id,
+        userName: user.userName,
+        email: user.email,
+        profileImage: user.profileImage,
+        theme: user.theme,
+      },
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error finding user", errorMessage);
+    res.status(500).json({
+      message: "An error occurred while retrieving the user",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
