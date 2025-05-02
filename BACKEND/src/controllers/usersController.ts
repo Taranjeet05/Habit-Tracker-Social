@@ -2,7 +2,11 @@ import debug from "debug";
 const log = debug("app:usersController");
 import { Request, Response } from "express";
 import User from "../models/User.js";
-import { loginSchema, registerSchema } from "../validations/user.schema.js";
+import {
+  loginSchema,
+  registerSchema,
+  updateUserSchema,
+} from "../validations/user.schema.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/genrateToken.js";
 
@@ -147,6 +151,46 @@ export const getUserById = async (
     log("Error finding user", errorMessage);
     res.status(500).json({
       message: "An error occurred while retrieving the user",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
+
+// Update user info (e.g., theme, profile image)
+export const updateUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const parsed = updateUserSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(409).json({
+        errors: parsed.error.flatten().fieldErrors,
+      });
+      return;
+    }
+
+    const userId = req.params.id;
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: parsed.data },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      res.status(404).json({ message: "User Not Found" });
+      return;
+    }
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "undefined";
+    log("Error to update", errorMessage);
+    res.status(500).json({
+      message: "Failed to update Profile",
       error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
