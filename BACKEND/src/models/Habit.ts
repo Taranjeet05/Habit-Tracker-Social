@@ -43,9 +43,21 @@ const habitSchema = new mongoose.Schema<IHabit>(
         type: Boolean,
         default: false,
       },
-      time: {
-        type: String,
-        default: "09:00", // Format: HH:MM in 24h
+      timesPerDay: {
+        type: Number,
+        default: 1,
+        min: 1,
+        max: 10,
+      },
+      times: {
+        type: [String], // Array of "HH:MM" format
+        validate: {
+          validator: function (times: string[]) {
+            return times.every((t) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(t));
+          },
+          message: "Each time must be in HH:MM format",
+        },
+        default: undefined, // Not saved if reminders are not enabled
       },
     },
     startDate: {
