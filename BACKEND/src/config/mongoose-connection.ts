@@ -1,4 +1,3 @@
-// src/config/mongoose-connection.ts
 import mongoose from "mongoose";
 import debug from "debug";
 const log = debug("app:db"); // Namespace for DB logs
