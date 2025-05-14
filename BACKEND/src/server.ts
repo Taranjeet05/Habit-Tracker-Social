@@ -18,7 +18,6 @@ import notificationsRouter from "./routes/notificationsRouter.js";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-//  __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -34,8 +33,6 @@ app.use(cookieParser());
 // Static files (create a public directory in your backend)
 app.use(express.static(path.join(__dirname, "public")));
 
-// Basic route
-
 app.use("/", index);
 app.use("/api/users", usersRouter);
 app.use("/api/habits", habitsRouter);
@@ -44,7 +41,7 @@ app.use("/api/friends", friendRequestsRouter);
 app.use("/api/notifications", notificationsRouter);
 
 // Server setup
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || "5000", 10);
 app.listen(PORT, () => {
-  log(`Server running on port ${PORT}`);
+  console.log(`✅ Server listening on http://localhost:${PORT}`);
 });
