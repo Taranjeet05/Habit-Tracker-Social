@@ -17,7 +17,7 @@ export const createHabit = async (
     }
     const data = parsed.data;
     // Check if User Exist or Not..
-    const userId = req.user?._id;
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
 
     if (!userId) {
       res.status(401).json({
@@ -47,6 +47,36 @@ export const createHabit = async (
     log("Error Creating a New Habit", errorMessage);
     res.status(500).json({
       message: "Failed to Create Habit",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
+
+export const getHabitsByUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // checking if user exist or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    // if user is not logged in we will return 401
+    if (!userId) {
+      res.status(401).json({
+        message: "You need to Login first",
+      });
+    }
+    // if user is logged in we will return 200 and all the habits of the user
+    const habits = await Habit.find({ user: userId }).lean();
+    res.status(200).json({
+      success: true,
+      message: "Habits Fetched Successfully ✅",
+      data: habits,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error Getting Habits by User", errorMessage);
+    res.status(500).json({
+      message: "Failed to get Habits by User",
       error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
