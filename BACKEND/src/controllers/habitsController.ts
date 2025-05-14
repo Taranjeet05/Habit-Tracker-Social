@@ -81,3 +81,46 @@ export const getHabitsByUser = async (
     });
   }
 };
+
+export const getHabitById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // checking if user exist or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+
+    // if user is not logged in we will return 401
+    if (!userId) {
+      res.status(401).json({
+        message: "you need to Login first",
+      });
+    }
+    // getting the habitId from the params
+    const habitId = req.params.id;
+
+    // if user exists we will return 200 and data of habitId
+    const habit = await Habit.findById(habitId).lean();
+
+    // checking if habitId is valid or not
+    if (!habitId) {
+      res.status(400).json({
+        message: "HabitId is required",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Habit Fetched Successfully ✅",
+      data: habit,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error Getting Habit by Id", errorMessage);
+    res.status(500).json({
+      message: "Failed to get Habit by Id",
+      error: process.env.Node_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
