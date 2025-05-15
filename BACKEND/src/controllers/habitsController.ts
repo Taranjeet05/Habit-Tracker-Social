@@ -124,3 +124,31 @@ export const getHabitById = async (
     });
   }
 };
+
+export const updateHabit = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // checking if user exist or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    // if user is not logged in we will return 401
+    if (!userId) {
+      res.status(401).json({
+        message: "You need to Login first",
+      });
+    }
+    // getting habitId from params
+    // zod validation for update habit
+    // finding the habit by id in mongoDB
+    // if habit is not found we will return 404
+    // if habit is found we will update the habit and return 200
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error updating Habit", errorMessage);
+    res.status(500).json({
+      message: "Failed to update Habit",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
