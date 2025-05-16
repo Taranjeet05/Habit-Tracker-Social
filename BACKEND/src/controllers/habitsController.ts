@@ -26,7 +26,7 @@ export const createHabit = async (
       return;
     }
 
-    const newHabit = Habit.create({
+    const newHabit = await Habit.create({
       ...data,
       user: userId,
       reminders: parsed.data.reminders
@@ -99,13 +99,21 @@ export const getHabitById = async (
     // getting the habitId from the params
     const habitId = req.params.id;
 
-    // if user exists we will return 200 and data of habitId
-    const habit = await Habit.findById(habitId).lean();
-
     // checking if habitId is valid or not
     if (!habitId) {
       res.status(400).json({
         message: "HabitId is required",
+      });
+      return;
+    }
+
+    // if user exists we will return 200 and data of habitId
+    const habit = await Habit.findById(habitId).lean();
+
+    // if habit is not found we will return 404
+    if (!habit) {
+      res.status(404).json({
+        message: "Habit not found",
       });
       return;
     }
@@ -120,7 +128,7 @@ export const getHabitById = async (
     log("Error Getting Habit by Id", errorMessage);
     res.status(500).json({
       message: "Failed to get Habit by Id",
-      error: process.env.Node_ENV === "development" ? errorMessage : undefined,
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
 };
@@ -139,10 +147,49 @@ export const updateHabit = async (
       });
     }
     // getting habitId from params
+    const habitId = req.params.id;
+    if (!habitId) {
+      res.status(400).json({
+        message: "HabitId is required",
+      });
+    }
     // zod validation for update habit
+    const parsed = createHabitsSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(409).json({ errors: parsed.error.flatten().fieldErrors });
+      return;
+    }
+    const data = parsed.data;
     // finding the habit by id in mongoDB
+    const habit = await Habit.findById(habitId);
     // if habit is not found we will return 404
+    if (!habit) {
+      res.status(404).json({
+        message: "Habit not found",
+      });
+      return;
+    }
     // if habit is found we will update the habit and return 200
+    const updateHabit = await Habit.findByIdAndUpdate(
+      habitId,
+      {
+        ...data,
+        user: userId,
+        reminders: parsed.data.reminders
+          ? {
+              enabled: true,
+              times: parsed.data.reminders.times,
+              timePerDay: parsed.data.reminders.timesPerDay,
+            }
+          : { enabled: false },
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Habit Updated Successfully ✅",
+      data: updateHabit,
+    });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error updating Habit", errorMessage);
