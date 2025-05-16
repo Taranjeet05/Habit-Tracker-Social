@@ -199,3 +199,47 @@ export const updateHabit = async (
     });
   }
 };
+
+export const deleteHabit = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // checking if user exist or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    if (!userId) {
+      res.status(401).json({
+        message: "You need to Login first",
+      });
+    }
+    // getting habitId from params
+    const habitId = req.params.id;
+    // if habitId is not found we will return 400
+    if (!habitId) {
+      res.status(400).json({
+        message: "HabitId is required",
+      });
+    }
+    // if habitId is found we will delete the habit and return 200
+    const habit = await Habit.findByIdAndDelete(habitId);
+    // if habit is not found we will return 404
+    if (!habit) {
+      res.status(404).json({
+        message: "Habit not found",
+      });
+      return;
+    }
+    // if habit is found we will return 200 and delete the habit
+    res.status(200).json({
+      success: true,
+      message: "Habit Deleted Successfully ✅",
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error deleting Habit", errorMessage);
+    res.status(500).json({
+      message: "Failed to delete Habit",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};

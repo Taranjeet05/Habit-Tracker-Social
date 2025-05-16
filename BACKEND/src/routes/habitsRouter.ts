@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createHabit,
+  deleteHabit,
   getHabitById,
   getHabitsByUser,
   updateHabit,
@@ -13,5 +14,6 @@ router.post("/", authenticateUser, createHabit);
 router.get("/", authenticateUser, getHabitsByUser);
 router.get("/:id", authenticateUser, getHabitById);
 router.put("/:id", authenticateUser, updateHabit);
+router.delete("/:id", authenticateUser, deleteHabit);
 
 export default router;
