@@ -243,3 +243,17 @@ export const deleteHabit = async (
     });
   }
 };
+
+
+//                                   Important Note  📌 🚩 ✨ ⬇️
+/************************************************************************************
+
+/* For now we provide hard coded user id from the mongoDb for testing all the routes
+  6813a52286c4475597e179c6 > we will remove this in the future
+  and use the userId from the req.user._id 😓🔓📌
+
+  ************************************************************************************
+
+  createHabit, getHabitsByUser, getHabitById, updateHabit, deleteHabit
+  all the routes are working fine ✅
+  */
