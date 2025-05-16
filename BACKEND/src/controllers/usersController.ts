@@ -8,7 +8,7 @@ import {
   updateUserSchema,
 } from "../validations/user.schema.js";
 import bcrypt from "bcryptjs";
-import { generateToken } from "../utils/genrateToken.js";
+import { generateToken } from "../utils/generateToken.js";
 
 // Create a new user
 export const registerUser = async (
