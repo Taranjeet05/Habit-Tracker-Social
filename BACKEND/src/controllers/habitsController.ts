@@ -42,6 +42,7 @@ export const createHabit = async (
       message: "Habit created successfully ✅",
       data: newHabit,
     });
+    return;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error Creating a New Habit", errorMessage);
@@ -64,6 +65,7 @@ export const getHabitsByUser = async (
       res.status(401).json({
         message: "You need to Login first",
       });
+      return;
     }
     // if user is logged in we will return 200 and all the habits of the user
     const habits = await Habit.find({ user: userId }).lean();
@@ -72,6 +74,7 @@ export const getHabitsByUser = async (
       message: "Habits Fetched Successfully ✅",
       data: habits,
     });
+    return;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error Getting Habits by User", errorMessage);
@@ -95,6 +98,7 @@ export const getHabitById = async (
       res.status(401).json({
         message: "you need to Login first",
       });
+      return;
     }
     // getting the habitId from the params
     const habitId = req.params.id;
@@ -123,6 +127,7 @@ export const getHabitById = async (
       message: "Habit Fetched Successfully ✅",
       data: habit,
     });
+    return;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error Getting Habit by Id", errorMessage);
@@ -145,6 +150,7 @@ export const updateHabit = async (
       res.status(401).json({
         message: "You need to Login first",
       });
+      return;
     }
     // getting habitId from params
     const habitId = req.params.id;
@@ -152,6 +158,7 @@ export const updateHabit = async (
       res.status(400).json({
         message: "HabitId is required",
       });
+      return;
     }
     // zod validation for update habit
     const parsed = createHabitsSchema.safeParse(req.body);
@@ -190,6 +197,7 @@ export const updateHabit = async (
       message: "Habit Updated Successfully ✅",
       data: updateHabit,
     });
+    return;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error updating Habit", errorMessage);
@@ -211,6 +219,7 @@ export const deleteHabit = async (
       res.status(401).json({
         message: "You need to Login first",
       });
+      return;
     }
     // getting habitId from params
     const habitId = req.params.id;
@@ -219,6 +228,7 @@ export const deleteHabit = async (
       res.status(400).json({
         message: "HabitId is required",
       });
+      return;
     }
     // if habitId is found we will delete the habit and return 200
     const habit = await Habit.findByIdAndDelete(habitId);
@@ -234,6 +244,7 @@ export const deleteHabit = async (
       success: true,
       message: "Habit Deleted Successfully ✅",
     });
+    return;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error deleting Habit", errorMessage);
@@ -243,7 +254,6 @@ export const deleteHabit = async (
     });
   }
 };
-
 
 //                                   Important Note  📌 🚩 ✨ ⬇️
 /************************************************************************************
