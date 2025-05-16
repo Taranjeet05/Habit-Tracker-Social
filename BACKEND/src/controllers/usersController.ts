@@ -57,11 +57,13 @@ export const registerUser = async (
         theme: newUser.theme,
       },
     });
-  } catch (error: any) {
-    log("Error during user registration:", error.message);
+    return;
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error during user Registration", errorMessage);
     res.status(500).json({
       message: "Registration Failed",
-      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
 };
@@ -115,11 +117,13 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         theme: user.theme,
       },
     });
-  } catch (error: any) {
-    log("Error during user login:", error.message);
+    return;
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error during user login", errorMessage);
     res.status(500).json({
       message: "Login Failed",
-      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
 };
@@ -148,6 +152,7 @@ export const getUserById = async (
         theme: user.theme,
       },
     });
+    return;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error finding user", errorMessage);
@@ -188,7 +193,8 @@ export const updateUser = async (
       message: "User updated successfully",
       user: updatedUser,
     });
-  } catch (error) {
+    return;
+  } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "undefined";
     log("Error to update", errorMessage);
     res.status(500).json({
@@ -216,9 +222,10 @@ export const getUserFriends = async (
 
     res.status(200).json({
       message: "All your friends",
-      user: findUser,
+      user: findUser.friends,
     });
-  } catch (error) {
+    return;
+  } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error finding the friend list", errorMessage);
     res.status(500).json({
