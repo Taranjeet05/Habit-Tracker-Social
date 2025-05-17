@@ -1,8 +1,14 @@
 import express, { Request, Response } from "express";
+import { createHabitLog } from "../controllers/habitLogsController.js";
 const router = express.Router();
 
-router.get("/", (req: Request, res: Response) => {
-  res.send("Hello from the habitLogsRouter");
-});
+// Endpoint -> "/api/habit-logs"
+router.post("/", createHabitLog);
+/* 
+router.get("/:habitId", getHabitLogsByHabitId);
+router.put("/:id", updateHabitLog);
+router.delete("/:id", deleteHabitLog);
 
+*/
 export default router;
+
