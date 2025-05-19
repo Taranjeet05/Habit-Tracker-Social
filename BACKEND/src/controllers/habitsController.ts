@@ -186,7 +186,7 @@ export const updateHabit = async (
           ? {
               enabled: true,
               times: parsed.data.reminders.times,
-              timePerDay: parsed.data.reminders.timesPerDay,
+              timesPerDay: parsed.data.reminders.timesPerDay,
             }
           : { enabled: false },
       },
