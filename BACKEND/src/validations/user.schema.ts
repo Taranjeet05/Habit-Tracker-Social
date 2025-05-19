@@ -23,5 +23,5 @@ export const updateUserSchema = z.object({
   profileImage: z.string().optional(),
   friendRequestNotifications: z.boolean().optional(),
   friendActivityNotifications: z.boolean().optional(),
-  friendactivity: z.boolean().optional(),
+  friendActivity: z.boolean().optional(),
 });
