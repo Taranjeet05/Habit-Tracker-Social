@@ -26,15 +26,21 @@ export interface IHabit extends MongoDBDocument {
   description?: string;
   color: "green" | "blue" | "purple" | "teal" | "orange" | "red" | "yellow";
   user: Types.ObjectId;
+
   frequency: "daily" | "weekly" | "monthly" | "custom";
+
   customFrequency?: {
-    days?: number[];
-    times?: number;
+    daysOfWeek?: number[];    // 0 (Sun) to 6 (Sat)
+    daysOfMonth?: number[];   // 1 to 31
+    times?: number;           // Times per selected period
   };
+
   reminders: {
     enabled: boolean;
-    time: string;
+    timesPerDay?: number;     // Number of reminders per day (1-10)
+    times?: string[];         // ["08:00", "14:00"]
   };
+
   startDate: Date;
   archived: boolean;
   visibility: "private" | "friends" | "public";
