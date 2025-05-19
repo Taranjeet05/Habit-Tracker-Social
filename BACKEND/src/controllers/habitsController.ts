@@ -21,7 +21,7 @@ export const createHabit = async (
 
     if (!userId) {
       res.status(401).json({
-        message: "You need to login first",
+        message: "You Need To Login First",
       });
       return;
     }
@@ -33,7 +33,7 @@ export const createHabit = async (
         ? {
             enabled: true,
             times: parsed.data.reminders.times,
-            timePerDay: parsed.data.reminders.timesPerDay,
+            timesPerDay: parsed.data.reminders.timesPerDay,
           }
         : { enabled: false },
     });
