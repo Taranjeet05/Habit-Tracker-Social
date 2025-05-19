@@ -23,21 +23,37 @@ const habitSchema = new mongoose.Schema<IHabit>(
       ref: "User",
       required: true,
     },
+
     frequency: {
       type: String,
       enum: ["daily", "weekly", "monthly", "custom"],
       default: "daily",
     },
+
     customFrequency: {
-      days: {
-        type: [Number],
+      daysOfWeek: {
+        type: [Number], // [0-6] => Sunday to Saturday
         default: [],
+        validate: {
+          validator: (arr: number[]) => arr.every((d) => d >= 0 && d <= 6),
+          message: "daysOfWeek must be numbers between 0 (Sun) and 6 (Sat)",
+        },
+      },
+      daysOfMonth: {
+        type: [Number], // [1-31]
+        default: [],
+        validate: {
+          validator: (arr: number[]) => arr.every((d) => d >= 1 && d <= 31),
+          message: "daysOfMonth must be between 1 and 31",
+        },
       },
       times: {
-        type: Number, // How many times per period
+        type: Number,
         default: 1,
+        min: 1,
       },
     },
+
     reminders: {
       enabled: {
         type: Boolean,
@@ -50,24 +66,29 @@ const habitSchema = new mongoose.Schema<IHabit>(
         max: 10,
       },
       times: {
-        type: [String], // Array of "HH:MM" format
+        type: [String], // "HH:MM"
         validate: {
           validator: function (times: string[]) {
-            return times.every((t) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(t));
+            return times.every((t) =>
+              /^([01]\d|2[0-3]):([0-5]\d)$/.test(t)
+            );
           },
           message: "Each time must be in HH:MM format",
         },
-        default: undefined, // Not saved if reminders are not enabled
+        default: undefined,
       },
     },
+
     startDate: {
       type: Date,
       default: Date.now,
     },
+
     archived: {
       type: Boolean,
       default: false,
     },
+
     visibility: {
       type: String,
       enum: ["private", "friends", "public"],
