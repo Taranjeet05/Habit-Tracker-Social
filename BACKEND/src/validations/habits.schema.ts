@@ -23,12 +23,16 @@ export const createHabitsSchema = z
       .default("daily"),
     customFrequency: z
       .object({
-        days: z
-          .array(z.number().min(0).max(6)) // 0 (Sunday) - 6 (Saturday)
-          .min(1, "Select at least 1 day")
-          .max(7, "Too many days selected"),
-        frequencyTimes: z
-          .number() // Times per period
+        daysOfWeek: z
+          .array(z.number().min(0).max(6))
+          .max(7, "Too many days selected")
+          .optional(),
+        daysOfMonth: z
+          .array(z.number().min(1).max(31))
+          .max(31, "Too many days in month selected")
+          .optional(),
+        times: z
+          .number()
           .int()
           .min(1, "Minimum 1 time per period")
           .max(100, "Maximum 100 times per period"),
@@ -58,18 +62,23 @@ export const createHabitsSchema = z
   .superRefine((data, ctx) => {
     // Custom frequency validation
     if (data.frequency === "custom") {
-      if (!data.customFrequency) {
+      const custom = data.customFrequency;
+
+      if (!custom) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Custom frequency required",
+          message: "Custom frequency is required",
           path: ["customFrequency"],
         });
       } else {
-        if (data.customFrequency.days.length === 0) {
+        if (
+          (!custom.daysOfWeek || custom.daysOfWeek.length === 0) &&
+          (!custom.daysOfMonth || custom.daysOfMonth.length === 0)
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Select at least 1 day",
-            path: ["customFrequency.days"],
+            message: "Select at least one day (week or month)",
+            path: ["customFrequency"],
           });
         }
       }
