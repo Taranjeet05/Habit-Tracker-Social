@@ -44,6 +44,13 @@ export const createHabitLog = async (
     }
     // checking the frequency and times of the habit
     const frequency = habit.frequency; // "daily", "weekly", "monthly", "custom"
+    // check if the habit has custom frequency settings.
+    if (frequency === "custom" && !habit.customFrequency) {
+      res.status(400).json({
+        message: "Custom Frequency settings are missing for this habit",
+      });
+      return;
+    }
     const times = habit.customFrequency?.times || [];
 
     // function to check if the date is valid according to the habit frequency and how many times it is logged
@@ -80,7 +87,7 @@ export const createHabitLog = async (
     }
 
     // determine how many times per day the habit can be logged
-    const timesPerDay = habit.customFrequency?.times || 1;
+    const timesPerDay = habit.customFrequency?.timesPerDay || 1;
 
     // count how many logs exist for this user, habit, and date
     const existingLogsCount = await HabitLog.countDocuments({
