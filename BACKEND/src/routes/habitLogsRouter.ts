@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { createHabitLog } from "../controllers/habitLogsController.js";
 const router = express.Router();
 
@@ -11,4 +11,3 @@ router.delete("/:id", deleteHabitLog);
 
 */
 export default router;
-
