@@ -43,7 +43,7 @@ export const createHabitLog = async (
       return;
     }
     // checking the frequency and times of the habit
-    const frequency = habit.frequency; // "daily", "weekly", "monthly", "custom"
+    const { frequency, customFrequency } = habit; // "daily", "weekly", "monthly", "custom"
     // check if the habit has custom frequency settings.
     if (frequency === "custom" && !habit.customFrequency) {
       res.status(400).json({
@@ -51,43 +51,44 @@ export const createHabitLog = async (
       });
       return;
     }
-    const times = habit.customFrequency?.times || [];
+    const daysOfWeek = customFrequency?.daysOfWeek || [];
+    const daysOfMonth = customFrequency?.daysOfMonth || [];
+    // determine how many times per day the habit can be logged
+    const timesPerDay = customFrequency?.times || [];
 
-    // function to check if the date is valid according to the habit frequency and how many times it is logged
-
+    // function to check if the date is valid based on the frequency and times
     const isValidDate = (
       date: Date,
       frequency: String,
-      times: number[]
+      daysOfWeek: number[],
+      daysOfMonth: number[]
     ): boolean => {
-      const dayOfWeek = date.getUTCDay();
-      const dayOfMonth = date.getUTCDate();
+      const dayOfWeek = date.getUTCDay(); // 0-6 (Sun-Sat)
+      const dayOfMonth = date.getUTCDate(); // 1-31
 
       switch (frequency) {
         case "daily":
           return true;
         case "weekly":
-          return times.includes(dayOfWeek);
+          return daysOfWeek.includes(dayOfWeek);
         case "monthly":
-          return times.includes(dayOfMonth);
+          return daysOfMonth.includes(dayOfMonth);
         case "custom":
-          // You can adjust this logic as needed for custom
-          return times.includes(dayOfWeek) || times.includes(dayOfMonth);
+          return (
+            daysOfWeek.includes(dayOfWeek) || daysOfMonth.includes(dayOfMonth)
+          );
         default:
           return false;
       }
     };
 
     // check if the date is not valid based on the frequency and times
-    if (!isValidDate(parsedDate, frequency, times)) {
+    if (!isValidDate(parsedDate, frequency, daysOfWeek, daysOfMonth)) {
       res.status(400).json({
         message: "Invalid Date Based on Habit Frequency",
       });
       return;
     }
-
-    // determine how many times per day the habit can be logged
-    const timesPerDay = habit.customFrequency?.timesPerDay || 1;
 
     // count how many logs exist for this user, habit, and date
     const existingLogsCount = await HabitLog.countDocuments({
