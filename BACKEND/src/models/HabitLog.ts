@@ -32,7 +32,7 @@ const HabitLogSchema = new Schema<IHabitLog>(
 );
 
 // Compound index to ensure one log per habit per day
-HabitLogSchema.index({ habit: 1, date: 1 }, { unique: true });
+HabitLogSchema.index({ user: 1, habit: 1, date: 1 });
 
 const HabitLog =
   mongoose.models.HabitLog || mongoose.model("HabitLog", HabitLogSchema);
