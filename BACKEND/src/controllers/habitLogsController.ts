@@ -129,3 +129,58 @@ export const createHabitLog = async (
     });
   }
 };
+
+export const getHabitLogsByHabitId = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // check if the user is authenticated or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    if (!userId) {
+      res.status(401).json({
+        message: "You Need to Login First",
+      });
+      return;
+    }
+    // checking habitId from req.params
+    const { habitId } = req.params;
+
+    // sorting and finding the habit logs based on the habitId and add the limit to 10
+    const limit = 10;
+    const habitLogs = await HabitLog.find({
+      user: userId,
+      habit: habitId,
+    })
+      .sort({ date: -1 })
+      .limit(limit)
+      .exec();
+
+    // count total numbers of habit logs for this habitId
+    const totalCount = await HabitLog.countDocuments({
+      user: userId,
+      habit: habitId,
+    });
+    // if no habit Logs found for this habit, return 404 status code.
+    if (!habitLogs || habitLogs.length === 0) {
+      res.status(404).json({
+        message: "No Habit Logs Found for this Habit",
+      });
+      return;
+    }
+
+    // response to the client with the success message and the habit Logs
+    res.status(200).json({
+      message: "Habit Logs Fetched Successfully",
+      habitLogs: habitLogs,
+      totalCount: totalCount,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error Fetching Habit Logs", errorMessage);
+    res.status(500).json({
+      message: "Failed to Fetch Habit Logs",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
