@@ -235,6 +235,105 @@ Welcome! Here’s a **well-structured, stylish plan** for your `habitLogsControl
   }
 }
 ```
+---
+
+### 🗑️ `deleteHabitLog` Controller — Planning
+
+#### **Purpose**
+
+- **Primary Route:** `DELETE /api/habits/:habitId`  
+  ➜ Delete **all logs** associated with a habit.
+- **Optional Route:** `DELETE /api/habits/log/:logId`  
+  ➜ Delete a **specific single habit log**.
+
+We’ll plan both routes separately for clarity.
+
+---
+
+#### 1️⃣ **DELETE `/api/habits/:habitId` — Delete All Logs of a Habit**
+
+**Steps:**
+
+1. **🔐 Check User Authentication**
+   ```js
+   if (!req.user) {
+     return res.status(401).json({ message: "You need to login first 🔒" });
+   }
+   ```
+
+2. **🆔 Validate `habitId`**
+   ```js
+   const { habitId } = req.params;
+   if (!habitId) {
+     return res.status(400).json({ message: "Habit ID is required ❗" });
+   }
+   ```
+
+3. **🧹 Delete Logs from HabitLog Model**
+   ```js
+   const result = await HabitLog.deleteMany({
+     habit: habitId,
+     user: req.user._id,
+   });
+   ```
+
+4. **✅ Return Response**
+   ```js
+   res.status(200).json({
+     message: `Deleted ${result.deletedCount} log(s) for this habit 🧼`,
+   });
+   ```
+
+---
+
+#### 2️⃣ **DELETE `/api/habits/log/:logId` — Delete a Single Log**
+
+**Steps:**
+
+1. **🔐 Check User Authentication**
+   ```js
+   if (!req.user) {
+     return res.status(401).json({ message: "You need to login first 🔒" });
+   }
+   ```
+
+2. **🆔 Validate `logId`**
+   ```js
+   const { logId } = req.params;
+   if (!logId) {
+     return res.status(400).json({ message: "Log ID is required ❗" });
+   }
+   ```
+
+3. **🔍 Check if Log Exists and Belongs to User**
+   ```js
+   const log = await HabitLog.findOne({ _id: logId, user: req.user._id });
+   if (!log) {
+     return res.status(404).json({ message: "Habit log not found ❌" });
+   }
+   ```
+
+4. **🗑️ Delete the Log**
+   ```js
+   await log.deleteOne();
+   ```
+
+5. **✅ Return Response**
+   ```js
+   res.status(200).json({ message: "Habit log deleted successfully 🗑️" });
+   ```
+
+---
+
+#### ✨ **Summary Table**
+
+| **Route**                  | **Purpose**                | **Req Param** | **Action**                         |
+|----------------------------|----------------------------|---------------|-------------------------------------|
+| DELETE `/api/habits/:habitId`      | Delete all logs of a habit   | `habitId`     | `HabitLog.deleteMany(...)`          |
+| DELETE `/api/habits/log/:logId`    | Delete one specific log      | `logId`       | `HabitLog.findOne` + `deleteOne()`  |
+
+---
+
 
 ---
 
