@@ -184,3 +184,44 @@ export const getHabitLogsByHabitId = async (
     });
   }
 };
+
+export const getWeeklyGraphData = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // check if the user is logged in or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    if (!userId) {
+      res.status(401).json({
+        message: "You Need to Login First",
+      });
+      return;
+    }
+    // check if the habitId is provided in the request params
+    const {habitId} = req.params;
+    if(!habitId) {
+      res.status(400).json({
+        message: "Habit Id is Required",
+      })
+      return;
+    }
+
+    // prepare date range for last 7 days
+    const today = new Date(); // current date
+    const startDate = new Date(today); // start from today
+    startDate.setUTCHours(0, 0, 0, 0); //set midnight time
+    
+    // query database for logs within the Date Range
+    
+    
+
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error fetching weekly graph data", errorMessage);
+    res.status(500).json({
+      message: "Failed to fetch weekly graph data",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
