@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { Request, Response } from "express";
 import debug from "debug";
 import HabitLog from "../models/HabitLog.js";
@@ -199,22 +200,72 @@ export const getWeeklyGraphData = async (
       return;
     }
     // check if the habitId is provided in the request params
-    const {habitId} = req.params;
-    if(!habitId) {
+    const { habitId } = req.params;
+    if (!habitId) {
       res.status(400).json({
         message: "Habit Id is Required",
-      })
+      });
       return;
     }
 
-    // prepare date range for last 7 days
-    const today = new Date(); // current date
-    const startDate = new Date(today); // start from today
-    startDate.setUTCHours(0, 0, 0, 0); //set midnight time
-    
-    // query database for logs within the Date Range
-    
-    
+    const habit = await Habit.findById(habitId);
+    if (!habit) {
+      res.status(400).json({
+        message: "Habit Not Found",
+      });
+      return;
+    }
+    // check timesPerDay for the habit on that day
+    const timesPerDay = habit.customFrequency?.times || 1; // Default to 1 if not set
+
+    // Prepare Date Range for the last 7 days
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0); // set time to midnight UTC
+    const startDate = new Date(today);
+    startDate.setUTCDate(today.getUTCDate() - 6); // 7 days ago date
+
+    // query habitLogs for the last 7 days
+    const logByDay = await HabitLog.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId.toString()),
+          habit: new Types.ObjectId(habitId.toString()),
+          date: {
+            $gte: startDate,
+            $lte: today
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$date" }
+          },
+          count: { $sum: 1 }, // count of logs per day
+        }
+      }
+    ]);
+
+    // fill in missing day with zero logs
+    const result = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startDate);
+      date.setUTCDate(startDate.getUTCDate() + i);
+      const dateString = date.toISOString().slice(0, 10);
+      const log = logByDay.find((l) => l._id === dateString);
+      const count = log ? log.count : 0;
+
+      result.push({
+        date: dateString,
+        count,
+        completed: count >= timesPerDay,
+      });
+    }
+
+    res.status(200).json({
+      message: "Weekly Graph Data Fetched Successfully",
+      weeklyGraphData: result,
+    });
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;

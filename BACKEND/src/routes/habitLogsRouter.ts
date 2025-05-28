@@ -2,6 +2,7 @@ import express from "express";
 import {
   createHabitLog,
   getHabitLogsByHabitId,
+  getWeeklyGraphData,
 } from "../controllers/habitLogsController.js";
 import { authenticateUser } from "../middlewares/authenticateUser.js";
 const router = express.Router();
@@ -9,6 +10,8 @@ const router = express.Router();
 // Endpoint -> "/api/habit-logs"
 router.post("/", authenticateUser, createHabitLog);
 router.get("/:habitId", authenticateUser, getHabitLogsByHabitId);
+router.get("/graph/weekly/:habitId", getWeeklyGraphData);
+
 
 /* 
 router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅✅
