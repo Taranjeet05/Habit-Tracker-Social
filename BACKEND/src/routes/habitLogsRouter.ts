@@ -10,8 +10,7 @@ const router = express.Router();
 // Endpoint -> "/api/habit-logs"
 router.post("/", authenticateUser, createHabitLog);
 router.get("/:habitId", authenticateUser, getHabitLogsByHabitId);
-router.get("/graph/weekly/:habitId", getWeeklyGraphData);
-
+router.get("/graph/weekly/:habitId", authenticateUser, getWeeklyGraphData);
 
 /* 
 router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅✅

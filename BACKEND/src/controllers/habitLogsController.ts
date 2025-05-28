@@ -1,4 +1,4 @@
-import { Types } from 'mongoose';
+import { Types } from "mongoose";
 import { Request, Response } from "express";
 import debug from "debug";
 import HabitLog from "../models/HabitLog.js";
@@ -232,18 +232,18 @@ export const getWeeklyGraphData = async (
           habit: new Types.ObjectId(habitId.toString()),
           date: {
             $gte: startDate,
-            $lte: today
-          }
-        }
+            $lte: today,
+          },
+        },
       },
       {
         $group: {
           _id: {
-            $dateToString: { format: "%Y-%m-%d", date: "$date" }
+            $dateToString: { format: "%Y-%m-%d", date: "$date" },
           },
           count: { $sum: 1 }, // count of logs per day
-        }
-      }
+        },
+      },
     ]);
 
     // fill in missing day with zero logs
@@ -266,7 +266,6 @@ export const getWeeklyGraphData = async (
       message: "Weekly Graph Data Fetched Successfully",
       weeklyGraphData: result,
     });
-
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error fetching weekly graph data", errorMessage);
