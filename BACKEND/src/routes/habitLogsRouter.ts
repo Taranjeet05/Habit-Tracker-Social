@@ -4,6 +4,7 @@ import {
   getHabitLogsByHabitId,
   getMonthlyGraphData,
   getWeeklyGraphData,
+  updateHabitLog,
 } from "../controllers/habitLogsController.js";
 import { authenticateUser } from "../middlewares/authenticateUser.js";
 const router = express.Router();
@@ -13,6 +14,7 @@ router.post("/", authenticateUser, createHabitLog);
 router.get("/:habitId", authenticateUser, getHabitLogsByHabitId);
 router.get("/graph/weekly/:habitId", authenticateUser, getWeeklyGraphData);
 router.get("/graph/monthly/:habitId", authenticateUser, getMonthlyGraphData);
+router.put("/:logId", updateHabitLog);
 
 /* 
 router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅
