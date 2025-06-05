@@ -424,11 +424,14 @@ export const getMonthlyGraphData = async (
   }
 };
 
-export const updateHabitLog = async (req: Request, res: Response): Promise<void> => {
+export const updateHabitLog = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     // check if the user is logged in or not
     const userId = req.user?._id || "6813a52286c4475597e179c6";
-    if(!userId) {
+    if (!userId) {
       res.status(401).json({
         message: "You Need to LOgin First",
       });
@@ -436,19 +439,19 @@ export const updateHabitLog = async (req: Request, res: Response): Promise<void>
     }
     // check if the logId is provided in the req params
     const { logId } = req.params;
-    if(!logId) {
+    if (!logId) {
       res.status(400).json({
         message: "Log Id is Required",
       });
       return;
     }
-    
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error updating habit log", errorMessage),
-    res.status(500).json({
-      message : "Failed to Update Habit Log",
-      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
-    })
+      res.status(500).json({
+        message: "Failed to Update Habit Log",
+        error:
+          process.env.NODE_ENV === "development" ? errorMessage : undefined,
+      });
   }
-}
+};
