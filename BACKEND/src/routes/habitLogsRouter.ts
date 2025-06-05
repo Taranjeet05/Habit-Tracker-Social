@@ -12,7 +12,7 @@ const router = express.Router();
 router.post("/", authenticateUser, createHabitLog);
 router.get("/:habitId", authenticateUser, getHabitLogsByHabitId);
 router.get("/graph/weekly/:habitId", authenticateUser, getWeeklyGraphData);
-router.get("/graph/monthly/:habitId", getMonthlyGraphData);
+router.get("/graph/monthly/:habitId", authenticateUser, getMonthlyGraphData);
 
 /* 
 router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅
