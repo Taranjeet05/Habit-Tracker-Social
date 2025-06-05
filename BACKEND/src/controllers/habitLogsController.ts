@@ -283,15 +283,15 @@ export const getMonthlyGraphData = async (
   try {
     // check if the user is logged in or not
     const userId = req.user?._id || "6813a52286c4475597e179c6";
-    if(!userId) {
+    if (!userId) {
       res.status(401).json({
         message: "You Need to LOgin First",
       });
       return;
     }
     // check if the habitId is provided in the req params
-    const {habitId} = req.params;
-    if(!habitId) {
+    const { habitId } = req.params;
+    if (!habitId) {
       res.status(400).json({
         message: "Habit Id is Required",
       });
@@ -299,7 +299,7 @@ export const getMonthlyGraphData = async (
     }
     // check if the habit exists or not
     const habit = await Habit.findById(habitId);
-    if(!habit) {
+    if (!habit) {
       res.status(404).json({
         message: "Habit Not Found",
       });
@@ -318,7 +318,7 @@ export const getMonthlyGraphData = async (
     const endDate = new Date(today);
     endDate.setUTCDate(0); // set to the last day of the month
     endDate.setUTCHours(23, 59, 59, 999); // set time to the end of the day
-    
+
     // Aggregation pipeline to get logs for the last 6 months
     const monthlyStats = await HabitLog.aggregate([
       // Stage 1: Filter relevant logs
@@ -326,23 +326,23 @@ export const getMonthlyGraphData = async (
         $match: {
           user: new Types.ObjectId(userId.toString()),
           habit: new Types.ObjectId(habitId.toString()),
-          date: { $gte: startDate, $lte: endDate }
-        }
+          date: { $gte: startDate, $lte: endDate },
+        },
       },
       // Stage 2: Group by year-month and calculate metrics
       {
         $group: {
           _id: {
             year: { $year: "$date" },
-            month: { $month: "$date" }
+            month: { $month: "$date" },
           },
           totalDays: { $sum: 1 },
           completedDays: {
             $sum: {
-              $cond: [{ $eq: ["$completed", true] }, 1, 0]
-            }
-          }
-        }
+              $cond: [{ $eq: ["$completed", true] }, 1, 0],
+            },
+          },
+        },
       },
       // Stage 3: Calculate completion rate
       {
@@ -352,44 +352,55 @@ export const getMonthlyGraphData = async (
           month: "$_id.month",
           monthName: {
             $arrayElemAt: [
-              ["Jan","Feb","Mar","Apr","May","Jun",
-               "Jul","Aug","Sep","Oct","Nov","Dec"],
-              { $subtract: ["$_id.month", 1] }
-            ]
+              [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ],
+              { $subtract: ["$_id.month", 1] },
+            ],
           },
           completionRate: {
             $round: [
-              { $multiply: [
-                { $divide: ["$completedDays", "$totalDays"] },
-                100
-              ]},
-              0
-            ]
-          }
-        }
+              {
+                $multiply: [{ $divide: ["$completedDays", "$totalDays"] }, 100],
+              },
+              0,
+            ],
+          },
+        },
       },
       // Stage 4: Sort chronologically
-      { $sort: { year: 1, month: 1 } }
-    ]);    
+      { $sort: { year: 1, month: 1 } },
+    ]);
     // Fill missing month with 0% completion
     const completeData = [];
     const currentDate = new Date(startDate);
 
-     while (currentDate <= endDate) {
+    while (currentDate <= endDate) {
       const year = currentDate.getUTCFullYear();
       const month = currentDate.getUTCMonth() + 1;
-      
-      const existing = monthlyStats.find(s => 
-        s.year === year && s.month === month
+
+      const existing = monthlyStats.find(
+        (s) => s.year === year && s.month === month
       );
-      
+
       completeData.push({
         year,
         month,
-        monthName: currentDate.toLocaleString('default', { month: 'short' }),
-        completionRate: existing?.completionRate || 0
+        monthName: currentDate.toLocaleString("default", { month: "short" }),
+        completionRate: existing?.completionRate || 0,
       });
-      
+
       currentDate.setUTCMonth(currentDate.getUTCMonth() + 1);
     }
 
@@ -401,9 +412,8 @@ export const getMonthlyGraphData = async (
         end: endDate.toISOString().slice(0, 10),
       },
       habitTarget: habit.customFrequency?.times || 1,
-      data : completeData,
+      data: completeData,
     });
-
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error fetching monthly graph data", errorMessage);
