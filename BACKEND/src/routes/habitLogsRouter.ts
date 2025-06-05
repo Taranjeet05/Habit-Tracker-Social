@@ -2,6 +2,7 @@ import express from "express";
 import {
   createHabitLog,
   getHabitLogsByHabitId,
+  getMonthlyGraphData,
   getWeeklyGraphData,
 } from "../controllers/habitLogsController.js";
 import { authenticateUser } from "../middlewares/authenticateUser.js";
@@ -11,11 +12,12 @@ const router = express.Router();
 router.post("/", authenticateUser, createHabitLog);
 router.get("/:habitId", authenticateUser, getHabitLogsByHabitId);
 router.get("/graph/weekly/:habitId", authenticateUser, getWeeklyGraphData);
+router.get("/graph/monthly/:habitId", getMonthlyGraphData);
 
 /* 
-router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅✅
-router.get("/graph/weekly/:habitId", getWeeklyGraphData);
-router.get("/graph/monthly/:habitId", getMonthlyGraphData);
+router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅
+router.get("/graph/weekly/:habitId", getWeeklyGraphData); ✅✅✅
+router.get("/graph/monthly/:habitId", getMonthlyGraphData); ✅✅✅
 router.put("/:logId", updateHabitLog);
 router.delete("/:habitId", deleteHabitLog);
 
