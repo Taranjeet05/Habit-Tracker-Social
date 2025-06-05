@@ -275,3 +275,141 @@ export const getWeeklyGraphData = async (
     });
   }
 };
+
+export const getMonthlyGraphData = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // check if the user is logged in or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    if(!userId) {
+      res.status(401).json({
+        message: "You Need to LOgin First",
+      });
+      return;
+    }
+    // check if the habitId is provided in the req params
+    const {habitId} = req.params;
+    if(!habitId) {
+      res.status(400).json({
+        message: "Habit Id is Required",
+      });
+      return;
+    }
+    // check if the habit exists or not
+    const habit = await Habit.findById(habitId);
+    if(!habit) {
+      res.status(404).json({
+        message: "Habit Not Found",
+      });
+      return;
+    }
+
+    // check timesPerDay for the habit on that day
+    const timesPerDay = habit.customFrequency?.times || 1; // Default to 1 if not set
+
+    // Prepare Date Range for last 6 months;
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0); // set time to midnight UTC
+    const startDate = new Date(today);
+    startDate.setUTCMonth(today.getUTCMonth() - 5); // 6 months ago date
+    startDate.setUTCDate(1); // set to the first day of the month
+    const endDate = new Date(today);
+    endDate.setUTCDate(0); // set to the last day of the month
+    endDate.setUTCHours(23, 59, 59, 999); // set time to the end of the day
+    
+    // Aggregation pipeline to get logs for the last 6 months
+    const monthlyStats = await HabitLog.aggregate([
+      // Stage 1: Filter relevant logs
+      {
+        $match: {
+          user: new Types.ObjectId(userId.toString()),
+          habit: new Types.ObjectId(habitId.toString()),
+          date: { $gte: startDate, $lte: endDate }
+        }
+      },
+      // Stage 2: Group by year-month and calculate metrics
+      {
+        $group: {
+          _id: {
+            year: { $year: "$date" },
+            month: { $month: "$date" }
+          },
+          totalDays: { $sum: 1 },
+          completedDays: {
+            $sum: {
+              $cond: [{ $eq: ["$completed", true] }, 1, 0]
+            }
+          }
+        }
+      },
+      // Stage 3: Calculate completion rate
+      {
+        $project: {
+          _id: 0,
+          year: "$_id.year",
+          month: "$_id.month",
+          monthName: {
+            $arrayElemAt: [
+              ["Jan","Feb","Mar","Apr","May","Jun",
+               "Jul","Aug","Sep","Oct","Nov","Dec"],
+              { $subtract: ["$_id.month", 1] }
+            ]
+          },
+          completionRate: {
+            $round: [
+              { $multiply: [
+                { $divide: ["$completedDays", "$totalDays"] },
+                100
+              ]},
+              0
+            ]
+          }
+        }
+      },
+      // Stage 4: Sort chronologically
+      { $sort: { year: 1, month: 1 } }
+    ]);    
+    // Fill missing month with 0% completion
+    const completeData = [];
+    const currentDate = new Date(startDate);
+
+     while (currentDate <= endDate) {
+      const year = currentDate.getUTCFullYear();
+      const month = currentDate.getUTCMonth() + 1;
+      
+      const existing = monthlyStats.find(s => 
+        s.year === year && s.month === month
+      );
+      
+      completeData.push({
+        year,
+        month,
+        monthName: currentDate.toLocaleString('default', { month: 'short' }),
+        completionRate: existing?.completionRate || 0
+      });
+      
+      currentDate.setUTCMonth(currentDate.getUTCMonth() + 1);
+    }
+
+    // Response to the client with the success message and the monthly graph data
+    res.status(200).json({
+      message: "Monthly Graph Data Fetched Successfully",
+      timeRange: {
+        start: startDate.toISOString().slice(0, 10),
+        end: endDate.toISOString().slice(0, 10),
+      },
+      habitTarget: habit.customFrequency?.times || 1,
+      data : completeData,
+    });
+
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error fetching monthly graph data", errorMessage);
+    res.status(500).json({
+      message: "FAiled to fetch monthly graph data",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
