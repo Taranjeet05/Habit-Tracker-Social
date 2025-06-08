@@ -426,7 +426,7 @@ export const getMonthlyGraphData = async (
 
 export const updateHabitLog = async (req: Request, res: Response) => {
   try {
-    // check if the user exist or not
+    // check if the user is logged in or not
     const userId = req.user?._id || "6813a52286c4475597e179c6";
     if (!userId) {
       res.status(401).json({
@@ -434,9 +434,10 @@ export const updateHabitLog = async (req: Request, res: Response) => {
       });
       return;
     }
-    // Reject with 403 Forbidden
-    return res.status(403).json({
-      message: "Habit Log cannot be modified",
+
+    // reject with forbidden 403
+    res.status(403).json({
+      message: "Habit Logs can not be modified",
     });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
