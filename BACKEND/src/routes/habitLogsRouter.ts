@@ -14,7 +14,7 @@ router.post("/", authenticateUser, createHabitLog);
 router.get("/:habitId", authenticateUser, getHabitLogsByHabitId);
 router.get("/graph/weekly/:habitId", authenticateUser, getWeeklyGraphData);
 router.get("/graph/monthly/:habitId", authenticateUser, getMonthlyGraphData);
-router.put("/:logId", updateHabitLog);
+router.put("/:logId", authenticateUser, updateHabitLog);
 
 /* 
 router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅
