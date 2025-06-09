@@ -448,3 +448,52 @@ export const updateHabitLog = async (req: Request, res: Response) => {
     });
   }
 };
+
+// deleteAllHabitLogs
+
+export const deleteAllHabitLogs = async (req: Request, res: Response) => {
+  try {
+    // check if user exist or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    if (!userId) {
+      res.status(401).json({
+        message: "You Need to Login First",
+      });
+      return;
+    }
+    // validate habitId
+    const { habitId } = req.params;
+    if (habitId) {
+      res.status(400).json({
+        message: "Habit Id is Required",
+      });
+      return;
+    }
+    // verify the habit exist and belongs to the user
+    const habit = await Habit.findOne({ _id: habitId, user: userId });
+    if (!habit) {
+      res.status(404).json({
+        message: "Habit not found or not owned by You",
+      });
+      return;
+    }
+    // Delete all logs
+    const deletingAllLogs = await HabitLog.deleteMany({
+      habit: habitId,
+      user: userId,
+    });
+
+    // success response to the client
+    res.status(200).json({
+      message: `Deleted ${deletingAllLogs.deletedCount}log(s) for this Habit 🧼`,
+      deletedCount: deletingAllLogs.deletedCount,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error deleting all the logs", errorMessage);
+    res.status(500).json({
+      message: "System error during deleting all the logs",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
