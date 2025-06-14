@@ -424,7 +424,10 @@ export const getMonthlyGraphData = async (
   }
 };
 
-export const updateHabitLog = async (req: Request, res: Response) => {
+export const updateHabitLog = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     // check if the user is logged in or not
     const userId = req.user?._id || "6813a52286c4475597e179c6";
@@ -451,7 +454,10 @@ export const updateHabitLog = async (req: Request, res: Response) => {
 
 // deleteAllHabitLogs
 
-export const deleteAllHabitLogs = async (req: Request, res: Response) => {
+export const deleteAllHabitLogs = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     // check if user exist or not
     const userId = req.user?._id || "6813a52286c4475597e179c6";
@@ -493,50 +499,6 @@ export const deleteAllHabitLogs = async (req: Request, res: Response) => {
     log("Error deleting all the logs", errorMessage);
     res.status(500).json({
       message: "System error during deleting all the logs",
-      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
-    });
-  }
-};
-
-// delete Habit Log By Id..
-export const deleteHabitLogById = async (req: Request, res: Response) => {
-  try {
-    // check if user exist or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
-    if (!userId) {
-      res.status(401).json({
-        message: "You Need to Login FIrst",
-      });
-
-      // validate logId
-      const { habitId } = req.params;
-      if (!habitId) {
-        res.status(400).json({
-          message: "Habit Id is Required",
-        });
-      }
-
-      // Find and verify log ownership
-      const habitLog = await HabitLog.findByIdAndDelete({
-        user: userId,
-        _id: habitId,
-      });
-      if (!habitLog) {
-        res.status(404).json({
-          message: "Habit Log not found or not owned by user",
-        });
-      }
-
-      // success response to the client
-      res.status(200).json({
-        message: "Habit Log deleted successfully",
-      });
-    }
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : undefined;
-    log("Error while deleting Habit Log by ID");
-    res.status(500).json({
-      message: "System Error while Deleting the Habit Log by ID",
       error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
