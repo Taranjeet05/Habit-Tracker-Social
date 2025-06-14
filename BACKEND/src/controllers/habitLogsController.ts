@@ -463,7 +463,7 @@ export const deleteAllHabitLogs = async (req: Request, res: Response) => {
     }
     // validate habitId
     const { habitId } = req.params;
-    if (habitId) {
+    if (!habitId) {
       res.status(400).json({
         message: "Habit Id is Required",
       });
@@ -498,6 +498,7 @@ export const deleteAllHabitLogs = async (req: Request, res: Response) => {
   }
 };
 
+// delete Habit Log By Id..
 export const deleteHabitLogById = async (req: Request, res: Response) => {
   try {
     // check if user exist or not
