@@ -2,6 +2,7 @@ import express from "express";
 import {
   createHabitLog,
   deleteAllHabitLogs,
+  deleteHabitLogById,
   getHabitLogsByHabitId,
   getMonthlyGraphData,
   getWeeklyGraphData,
@@ -17,6 +18,7 @@ router.get("/graph/weekly/:habitId", authenticateUser, getWeeklyGraphData);
 router.get("/graph/monthly/:habitId", authenticateUser, getMonthlyGraphData);
 router.put("/:logId", authenticateUser, updateHabitLog);
 router.delete("/:habitId", authenticateUser, deleteAllHabitLogs);
+router.delete("/:habitLogId", deleteHabitLogById);
 
 /* 
 router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅

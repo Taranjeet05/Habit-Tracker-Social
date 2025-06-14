@@ -503,3 +503,49 @@ export const deleteAllHabitLogs = async (
     });
   }
 };
+
+// delete Habit Log by its ID
+
+export const deleteHabitLogById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // check if the user exist or not
+    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    if (!userId) {
+      res.status(401).json({
+        message: "You Need to Login First",
+      });
+      return;
+    }
+    const { habitLogId } = req.params;
+    if (!habitLogId) {
+      res.status(401).json({
+        message: "Habit Log Id is Required",
+      });
+      return;
+    }
+
+    const deletedLog = await HabitLog.findOneAndDelete({
+      _id: habitLogId,
+      user: userId,
+    });
+    if (!deletedLog) {
+      res.status(404).json({
+        message: "Habit Log not found or not owned by YOU",
+      });
+      return;
+    }
+    res.status(200).json({
+      message: "Log Deleted Successfully",
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log(`Error while deleting the Habit Log by it's ID`, errorMessage);
+    res.status(500).json({
+      message: `System Error during deleting Habit Log by it's ID`,
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
