@@ -554,7 +554,7 @@ export const deleteHabitLogById = async (
 
 export const calculateStreakForHabit = async (req: Request, res: Response) => {
   try {
-    // check if the user exsist or not 
+    // check if the user exist or not 
     const userId = req.user?._id || "6813a52286c4475597e179c6";
     if(!userId) {
       res.status(401).json({message : 'You Need to Login First'});
@@ -567,7 +567,7 @@ export const calculateStreakForHabit = async (req: Request, res: Response) => {
     log(`Error while Calculate current streak`);
     res.status(500).json({
       message: 'System Error during Calculate current streak',
-      error: process.env.NODE_ENV === 'develoment' ? errorMessage : undefined
+      error: process.env.NODE_ENV === 'development' ? errorMessage : undefined
     })
   }
 }
