@@ -27,7 +27,7 @@ router.get("/graph/monthly/:habitId", getMonthlyGraphData); ✅✅✅
 router.put("/:logId", updateHabitLog); ✅✅✅
 router.delete("/:habitId", deleteHabitLog);
 
-(** optional **) router.delete("/log/:logId", deleteHabitLog);
+(** optional **) router.delete("/single/habitLogId", deleteHabitLog); ✅✅✅
 
 */
 export default router;
