@@ -562,8 +562,14 @@ export const calculateStreakForHabit = async (req: Request, res: Response) => {
     }
     // validate habitId
     const { habitId } = req.params;
-    if(!habitId) {
-      res.status(400).json({message : "Habit Id is Required"});
+    if (!habitId) {
+      res.status(400).json({ message: "Habit Id is Required" });
+      return;
+    }
+    // Verify habit exists and belongs to user
+    const habit = await Habit.findOne({ _id: habitId, user: userId });
+    if (!habit) {
+      res.status(404).json({ message: "Habit not found or not owned by You" });
       return;
     }
   } catch (error: unknown) {
