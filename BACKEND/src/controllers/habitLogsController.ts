@@ -560,7 +560,12 @@ export const calculateStreakForHabit = async (req: Request, res: Response) => {
       res.status(401).json({ message: "You Need to Login First" });
       return;
     }
-    //
+    // validate habitId
+    const { habitId } = req.params;
+    if(!habitId) {
+      res.status(400).json({message : "Habit Id is Required"});
+      return;
+    }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log(`Error while Calculate current streak`);
