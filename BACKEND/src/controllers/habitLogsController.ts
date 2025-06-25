@@ -572,6 +572,13 @@ export const calculateStreakForHabit = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Habit not found or not owned by You" });
       return;
     }
+    // Get habitLogs for sorted newest to oldest
+    const habitLogs = await HabitLog.find({
+      user: userId,
+      habit: habitId,
+    })
+      .sort({ date: -1 })
+      .lean();
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log(`Error while Calculate current streak`);
