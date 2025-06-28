@@ -4,7 +4,7 @@ import debug from "debug";
 import HabitLog from "../models/HabitLog.js";
 import Habit from "../models/Habit.js";
 import { createHabitLogSchema } from "../validations/habitLogs.schema.js";
-import { startOfDay, startOfToday, format } from "date-fns";
+import { startOfDay, startOfToday, format, subDays } from "date-fns";
 import { IHabit, IHabitLog } from "../types/index.js";
 const log = debug("app:habitLogsController");
 
@@ -618,6 +618,7 @@ export const calculateStreakForHabit = async (req: Request, res: Response) => {
       if ((dateCounts.get(dateKey) || 0) >= requiredCompletions) {
         // check if the count for this date is greater than or equal to requiredCounts
         streak++; // increment streak if the count for this date is greater than or equal to requiredCounts
+        currentDate = subDays(currentDate, 1); // move to the previous day because we are calculating the streak backwards and we want to check the previous day.
       } else {
         break; // break the loop if the count for this date is less than requiredCounts
       }
