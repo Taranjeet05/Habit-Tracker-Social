@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  calculateStreakForHabit,
   createHabitLog,
   deleteAllHabitLogs,
   deleteHabitLogById,
@@ -19,7 +20,7 @@ router.get("/graph/monthly/:habitId", authenticateUser, getMonthlyGraphData);
 router.put("/:logId", authenticateUser, updateHabitLog);
 router.delete("/:habitId", authenticateUser, deleteAllHabitLogs);
 router.delete("/single/:habitLogId", authenticateUser, deleteHabitLogById);
-
+router.get("/:habitId", calculateStreakForHabit);
 /* 
 router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅
 router.get("/graph/weekly/:habitId", getWeeklyGraphData); ✅✅✅
@@ -28,7 +29,7 @@ router.put("/:logId", updateHabitLog); ✅✅✅
 router.delete("/:habitId", deleteHabitLog);
 
 (** optional **) router.delete("/single/habitLogId", deleteHabitLog); ✅✅✅
-
+router.get("/:habitId", calculateStreakForHabit); ✅✅✅
 */
 export default router;
 
