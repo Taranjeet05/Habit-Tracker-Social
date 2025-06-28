@@ -607,7 +607,33 @@ export const calculateStreakForHabit = async (req: Request, res: Response) => {
     const dateCounts = new Map<string, number>();
 
     // count completions per day (O(n)),
-    
+    logs.forEach((log) => {
+      const dateKey = format(startOfDay(log.date), "yyyy-MM-dd"); // format date to string
+      dateCounts.set(dateKey, (dateCounts.get(dateKey) || 0) + 1); // count completions for each date and store in a map because it is faster to access and update counts in a map.
+    });
+
+    // calculate streak (optimized)
+    while (true) {
+      const dateKey = format(currentDate, "yyyy-MM-dd");
+      if ((dateCounts.get(dateKey) || 0) >= requiredCompletions) {
+        // check if the count for this date is greater than or equal to requiredCounts
+        streak++; // increment streak if the count for this date is greater than or equal to requiredCounts
+      } else {
+        break; // break the loop if the count for this date is less than requiredCounts
+      }
+    }
+
+    // response to the client with the success message and the streak count
+    res.status(200).json({
+      success: true,
+      message: "Current Streak Calculated Successfully",
+      data: {
+        streak,
+        habit: habitId,
+        lastActive: streak > 0 ? format(currentDate, "yyyy-MM-dd") : null,
+        requiredPerDay: requiredCompletions,
+      },
+    });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log(`Error while Calculate current streak`);
