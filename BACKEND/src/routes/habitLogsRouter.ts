@@ -24,18 +24,8 @@ router.get("/:habitId", authenticateUser, getHabitLogsByHabitId); // ✅ general
 
 router.put("/:logId", authenticateUser, updateHabitLog); // ✅ update one log
 router.delete("/single/:habitLogId", authenticateUser, deleteHabitLogById); // ✅ delete one log
-router.delete("/:habitId", authenticateUser, deleteAllHabitLogs); // ✅ delete all logs for a habit
+router.delete("/:habitId", authenticateUser, deleteAllHabitLogs); // ‼️ delete all logs for a habit
 
-/* 
-router.get("/:habitId", getHabitLogsByHabitId); ✅✅✅
-router.get("/graph/weekly/:habitId", getWeeklyGraphData); ✅✅✅
-router.get("/graph/monthly/:habitId", getMonthlyGraphData); ✅✅✅
-router.put("/:logId", updateHabitLog); ✅✅✅
-router.delete("/:habitId", deleteHabitLog);
-
-(** optional **) router.delete("/single/habitLogId", deleteHabitLog); ✅✅✅
-router.get("/habits/:habitId/streak", calculateStreakForHabit); ✅✅✅
-*/
 export default router;
 
 /*
