@@ -4,6 +4,8 @@ import debug from "debug";
 import HabitLog from "../models/HabitLog.js";
 import Habit from "../models/Habit.js";
 import { createHabitLogSchema } from "../validations/habitLogs.schema.js";
+import { startOfDay, startOfToday, format } from "date-fns";
+import { IHabit, IHabitLog } from "../types/index.js";
 const log = debug("app:habitLogsController");
 
 export const createHabitLog = async (
@@ -554,31 +556,58 @@ export const deleteHabitLogById = async (
 
 export const calculateStreakForHabit = async (req: Request, res: Response) => {
   try {
-    // check if the user exist or not
+    // check if the user is logged in or not
     const userId = req.user?._id || "6813a52286c4475597e179c6";
     if (!userId) {
-      res.status(401).json({ message: "You Need to Login First" });
+      res.status(401).json({
+        message: "You Need to Login First",
+      });
       return;
     }
-    // validate habitId
+    // check if the habitId is provided in the req params
     const { habitId } = req.params;
     if (!habitId) {
-      res.status(400).json({ message: "Habit Id is Required" });
+      res.status(400).json({
+        message: "Habit Id is Required",
+      });
       return;
     }
-    // Verify habit exists and belongs to user
-    const habit = await Habit.findOne({ _id: habitId, user: userId });
-    if (!habit) {
-      res.status(404).json({ message: "Habit not found or not owned by You" });
+    // fetch the habit by its ID and check if it belongs to the user (lean + typed)
+    const habit = await Habit.findById(habitId).lean<IHabit>();
+    if (!habit || habit.user.toString() !== userId) {
+      res.status(404).json({
+        message: "Habit Not Found or not Owned by You",
+      });
       return;
     }
-    // Get habitLogs for sorted newest to oldest
-    const habitLogs = await HabitLog.find({
-      user: userId,
-      habit: habitId,
-    })
+    // optimized query
+    const logs = await HabitLog.find(
+      {
+        habit: habitId,
+        user: userId,
+        completed: true,
+        date: {
+          $lte: new Date(), // only past dates
+        },
+      },
+      { date: 1, _id: 0 } // projection to only get date and exclude _id
+    )
       .sort({ date: -1 })
-      .lean();
+      .lean<IHabitLog[]>(); // sorted by date in descending order
+    if (!logs || logs.length === 0) {
+      res.status(404).json({
+        message: "No Habit Logs Found for this Habit",
+      });
+      return;
+    }
+    // Streak Calculation
+    const requiredCompletions = habit.customFrequency?.times || 1; // Default to 1 if not set
+    let streak = 0;
+    let currentDate = startOfToday(); // start from today
+    const dateCounts = new Map<string, number>();
+
+    // count completions per day (O(n)),
+    
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined;
     log(`Error while Calculate current streak`);
