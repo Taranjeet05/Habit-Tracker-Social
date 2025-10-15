@@ -24,7 +24,7 @@ export const createHabitLog = async (
     const data = parsed.data;
 
     // check if user exist or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You Need To Login First",
@@ -139,7 +139,7 @@ export const getHabitLogsByHabitId = async (
 ): Promise<void> => {
   try {
     // check if the user is authenticated or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You Need to Login First",
@@ -194,7 +194,7 @@ export const getWeeklyGraphData = async (
 ): Promise<void> => {
   try {
     // check if the user is logged in or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You Need to Login First",
@@ -284,7 +284,7 @@ export const getMonthlyGraphData = async (
 ): Promise<void> => {
   try {
     // check if the user is logged in or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You Need to LOgin First",
@@ -432,7 +432,7 @@ export const updateHabitLog = async (
 ): Promise<void> => {
   try {
     // check if the user is logged in or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You Need to Login First",
@@ -462,7 +462,7 @@ export const deleteAllHabitLogs = async (
 ): Promise<void> => {
   try {
     // check if user exist or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You Need to Login First",
@@ -514,7 +514,7 @@ export const deleteHabitLogById = async (
 ): Promise<void> => {
   try {
     // check if the user exist or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You Need to Login First",
@@ -557,7 +557,7 @@ export const deleteHabitLogById = async (
 export const calculateStreakForHabit = async (req: Request, res: Response) => {
   try {
     // check if the user is logged in or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You Need to Login First",
