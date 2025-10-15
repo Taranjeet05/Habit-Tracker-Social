@@ -12,7 +12,7 @@ export const generateToken = (user: GenerateTokenProps["user"]): string => {
     throw new Error("JWT secret is not defined in environment variables");
   }
 
-  return jwt.sign({ email: user.email, id: user.id }, process.env.SECRET, {
+  return jwt.sign({ email: user.email, userId: user.id }, process.env.SECRET, {
     expiresIn: "7d",
   });
 };
