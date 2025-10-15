@@ -6,14 +6,14 @@ export interface ApiResponse<T> {
   data?: T;
 }
 
-const Api = axios.create({
+const API = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   timeout: 5000,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
-Api.interceptors.request.use(
+API.interceptors.request.use(
   (config) => {
     // get the token from the localStorage:
     const token = localStorage.getItem("token");
@@ -28,3 +28,5 @@ Api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+export default API;
