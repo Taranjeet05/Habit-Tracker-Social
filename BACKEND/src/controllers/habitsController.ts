@@ -17,7 +17,7 @@ export const createHabit = async (
     }
     const data = parsed.data;
     // Check if User Exist or Not..
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
 
     if (!userId) {
       res.status(401).json({
@@ -59,7 +59,7 @@ export const getHabitsByUser = async (
 ): Promise<void> => {
   try {
     // checking if user exist or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     // if user is not logged in we will return 401
     if (!userId) {
       res.status(401).json({
@@ -91,7 +91,7 @@ export const getHabitById = async (
 ): Promise<void> => {
   try {
     // checking if user exist or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
 
     // if user is not logged in we will return 401
     if (!userId) {
@@ -144,7 +144,7 @@ export const updateHabit = async (
 ): Promise<void> => {
   try {
     // checking if user exist or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     // if user is not logged in we will return 401
     if (!userId) {
       res.status(401).json({
@@ -214,7 +214,7 @@ export const deleteHabit = async (
 ): Promise<void> => {
   try {
     // checking if user exist or not
-    const userId = req.user?._id || "6813a52286c4475597e179c6";
+    const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
         message: "You need to Login first",
@@ -254,16 +254,3 @@ export const deleteHabit = async (
     });
   }
 };
-
-//                                   Important Note  📌 🚩 ✨ ⬇️
-/************************************************************************************
-
-/* For now we provide hard coded user id from the mongoDb for testing all the routes
-  6813a52286c4475597e179c6 > we will remove this in the future
-  and use the userId from the req.user._id 😓🔓📌
-
-  ************************************************************************************
-
-  createHabit, getHabitsByUser, getHabitById, updateHabit, deleteHabit
-  all the routes are working fine ✅
-  */
