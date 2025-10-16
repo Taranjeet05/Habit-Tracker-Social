@@ -57,7 +57,7 @@ export const createHabitLog = async (
     const daysOfWeek = customFrequency?.daysOfWeek || [];
     const daysOfMonth = customFrequency?.daysOfMonth || [];
     // determine how many times per day the habit can be logged
-    const timesPerDay = customFrequency?.times || [];
+    const timesPerDay = customFrequency?.times || 1;
 
     // function to check if the date is valid based on the frequency and times
     const isValidDate = (
@@ -92,12 +92,15 @@ export const createHabitLog = async (
       });
       return;
     }
+    const start = new Date(parsedDate);
+    const end = new Date(parsedDate);
+    end.setUTCHours(23, 59, 59, 999);
 
     // count how many logs exist for this user, habit, and date
     const existingLogsCount = await HabitLog.countDocuments({
       user: userId,
       habit: habitId,
-      date: isoDate,
+      date: { $gte: start, $lte: end },
     });
 
     if (existingLogsCount >= timesPerDay) {
@@ -287,7 +290,7 @@ export const getMonthlyGraphData = async (
     const userId = req.user?._id;
     if (!userId) {
       res.status(401).json({
-        message: "You Need to LOgin First",
+        message: "You Need to Login First",
       });
       return;
     }
@@ -318,7 +321,7 @@ export const getMonthlyGraphData = async (
     startDate.setUTCMonth(today.getUTCMonth() - 5); // 6 months ago date
     startDate.setUTCDate(1); // set to the first day of the month
     const endDate = new Date(today);
-    endDate.setUTCDate(0); // set to the last day of the month
+    endDate.setUTCMonth(today.getUTCMonth() + 1, 0); // set to the last day of the month
     endDate.setUTCHours(23, 59, 59, 999); // set time to the end of the day
 
     // Aggregation pipeline to get logs for the last 6 months
@@ -420,7 +423,7 @@ export const getMonthlyGraphData = async (
     const errorMessage = error instanceof Error ? error.message : undefined;
     log("Error fetching monthly graph data", errorMessage);
     res.status(500).json({
-      message: "FAiled to fetch monthly graph data",
+      message: "Failed to fetch monthly graph data",
       error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
@@ -441,7 +444,7 @@ export const updateHabitLog = async (
     }
 
     // reject with forbidden 403
-    res.status(403).json({
+    res.status(405).json({
       message: "Habit Logs can not be modified",
     });
   } catch (error: unknown) {
@@ -493,7 +496,7 @@ export const deleteAllHabitLogs = async (
 
     // success response to the client
     res.status(200).json({
-      message: `Deleted ${deletingAllLogs.deletedCount}log(s) for this Habit 🧼`,
+      message: `Deleted ${deletingAllLogs.deletedCount} log(s) for this Habit 🧼`,
       deletedCount: deletingAllLogs.deletedCount,
     });
   } catch (error: unknown) {
@@ -535,7 +538,7 @@ export const deleteHabitLogById = async (
     });
     if (!deletedLog) {
       res.status(404).json({
-        message: "Habit Log not found or not owned by YOU",
+        message: "Habit log not found or not owned by you",
       });
       return;
     }
@@ -631,7 +634,8 @@ export const calculateStreakForHabit = async (req: Request, res: Response) => {
       data: {
         streak,
         habit: habitId,
-        lastActive: streak > 0 ? format(currentDate, "yyyy-MM-dd") : null,
+        lastActive:
+          streak > 0 ? format(subDays(currentDate, -1), "yyyy-MM-dd") : null,
         requiredPerDay: requiredCompletions,
       },
     });
