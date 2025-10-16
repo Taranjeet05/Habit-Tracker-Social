@@ -24,7 +24,7 @@ router.get("/:habitId", authenticateUser, getHabitLogsByHabitId); // ✅ general
 
 router.put("/:logId", authenticateUser, updateHabitLog); // ✅ update one log
 router.delete("/single/:habitLogId", authenticateUser, deleteHabitLogById); // ✅ delete one log
-router.delete("/:habitId", authenticateUser, deleteAllHabitLogs); // ‼️ delete all logs for a habit
+router.delete("/all/:habitId", authenticateUser, deleteAllHabitLogs); // ‼️ delete all logs for a habit
 
 export default router;
 
