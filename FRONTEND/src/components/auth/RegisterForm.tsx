@@ -11,16 +11,55 @@ import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { registerUser } from "../../api/userApi";
+import { useUserStore } from "../../store/useUserStore";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: registerUser,
+    onSuccess: (data) => {
+      if (data.success && data.data) {
+        const user = data.data.user;
+        const token = data.data.token;
+
+        //save to localStorage
+        localStorage.setItem("token", token ?? "");
+
+        // set Zustand :
+        setUser({
+          userId: user._id,
+          userName: user.userName,
+          email: user.email,
+          profileImage: user.profileImage ?? null,
+          isAuthenticated: true,
+        });
+        navigate("/dashboard");
+      }
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert("Password and Confirm password must be exactly same");
+      return;
+    }
+
+    mutate({
+      userName: name,
+      email,
+      password,
+    });
   };
 
   return (
@@ -74,10 +113,15 @@ const RegisterForm = () => {
               required
             />
           </div>
+          {isError && (
+            <p className="text-red-500 text-sm">
+              {error?.message || "Something went wrong"}
+            </p>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col">
           <Button type="submit" className="w-full">
-            {/* {isLoading ? "Creating Account..." : "Register"} */}Register
+            {isPending ? "Creating Account..." : "Register"}
           </Button>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
