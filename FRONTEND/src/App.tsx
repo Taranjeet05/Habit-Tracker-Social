@@ -13,9 +13,14 @@ function App() {
         <Route path="/" element={<Start />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <UserProtectWrapper>
-          <DashBoard />
-        </UserProtectWrapper>
+        <Route
+          path="/dashboard"
+          element={
+            <UserProtectWrapper>
+              <DashBoard />
+            </UserProtectWrapper>
+          }
+        />
       </Routes>
     </>
   );
