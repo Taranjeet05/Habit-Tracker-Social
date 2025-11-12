@@ -61,13 +61,8 @@ export const registerUser = async (
   return data;
 };
 
-export const loginUser = async (
-  userData: LoginData
-): Promise<ApiResponse<UserData>> => {
-  const { data } = await API.post<ApiResponse<UserData>>(
-    "/users/login",
-    userData
-  );
+export const loginUser = async (userData: LoginData): Promise<UserData> => {
+  const { data } = await API.post<UserData>("/users/login", userData);
   return data;
 };
 
