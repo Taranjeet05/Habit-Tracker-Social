@@ -34,7 +34,7 @@ const LoginForm = () => {
 
         // setting zuStand
         setUser({
-          userId: user._id,
+          userId: user.id,
           userName: user.userName,
           email: user.email,
           profileImage: user.profileImage ?? null,

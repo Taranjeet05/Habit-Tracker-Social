@@ -27,7 +27,7 @@ interface UserData {
   message: string;
   token?: string;
   user: {
-    _id: string;
+    id: string;
     userName: string;
     email: string;
     profileImage?: string;
