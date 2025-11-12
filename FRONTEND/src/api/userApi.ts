@@ -6,6 +6,17 @@ interface RegisterData {
   email: string;
   password: string;
 }
+interface RegisterResponse {
+  message: string;
+  token: string;
+  user: {
+    id: string;
+    userName: string;
+    email: string;
+    profileImage?: string;
+    theme: string;
+  };
+}
 
 interface LoginData {
   email: string;
@@ -41,8 +52,8 @@ interface UpdatedData {
 
 export const registerUser = async (
   userData: RegisterData
-): Promise<ApiResponse<UserData>> => {
-  const { data } = await API.post<ApiResponse<UserData>>(
+): Promise<RegisterResponse> => {
+  const { data } = await API.post<RegisterResponse>(
     "/users/register",
     userData
   );
