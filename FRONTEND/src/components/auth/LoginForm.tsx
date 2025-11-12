@@ -11,15 +11,47 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useUserStore } from "../../store/useUserStore";
+import { loginUser } from "../../api/userApi";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      if (data.token && data.user) {
+        const user = data.user;
+        const token = data.token;
+
+        // save to the localStorage
+        localStorage.setItem("token", token ?? "");
+
+        // setting zuStand
+        setUser({
+          userId: user._id,
+          userName: user.userName,
+          email: user.email,
+          profileImage: user.profileImage ?? null,
+          isAuthenticated: true,
+        });
+        navigate("/dashboard");
+      }
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    mutate({
+      email,
+      password,
+    });
   };
 
   return (
@@ -58,10 +90,15 @@ const LoginForm = () => {
               required
             />
           </div>
+          {isError && (
+            <p className="text-red-500 text-sm">
+              {error?.message || "Something went wrong"}
+            </p>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col">
           <Button type="submit" className="w-full">
-            {/* {isLoading ? "Logging in..." : "Login"} */}Login
+            {isPending ? "Logging in..." : "Login"}
           </Button>
           <div className="mt-4 text-center text-sm">
             Don't have an account?{" "}
