@@ -27,16 +27,16 @@ const RegisterForm = () => {
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      if (data.success && data.data) {
-        const user = data.data.user;
-        const token = data.data.token;
+      if (data.user && data.token) {
+        const user = data.user;
+        const token = data.token;
 
         //save to localStorage
         localStorage.setItem("token", token ?? "");
 
         // set Zustand :
         setUser({
-          userId: user._id,
+          userId: user.id,
           userName: user.userName,
           email: user.email,
           profileImage: user.profileImage ?? null,
