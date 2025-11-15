@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import UserProtectWrapper from "./components/auth/UserProtectWrapper";
 import DashBoard from "./pages/DashBoard";
+import MainLayout from "./components/layout/MainLayout";
 
 function App() {
   return (
@@ -17,7 +18,9 @@ function App() {
           path="/dashboard"
           element={
             <UserProtectWrapper>
-              <DashBoard />
+              <MainLayout>
+                <DashBoard />
+              </MainLayout>
             </UserProtectWrapper>
           }
         />
