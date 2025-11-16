@@ -11,7 +11,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       <div className="min-h-screen flex w-full">
         <AppSideBar />
 
-        <main className="flex-1x">
+        <main className="flex-1">
           <div className="container px-4 py-6 max-w-7xl mx-auto">
             <SidebarTrigger />
             {children}
