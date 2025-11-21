@@ -1,66 +1,56 @@
 import { getTodayDate, getTodayWeekday } from "./dateUtils";
+import { Habit, HabitLog } from "../types/Habit";
 
-type HabitSchedule = {
-  type: "daily" | "weekly" | "specific";
-  days?: number[];
-  date?: string;
-};
-
-type HabitFrequency = {
-  timesPerDay: number; // frequency
-};
-
-type HabitLog = {
-  date: string;
-  count: number; // To check How many time the Habit has been completed;
-};
-
-type Habit = {
-  id: string;
-  title: string;
-  schedule: HabitSchedule;
-  frequency: HabitFrequency;
-  logs: HabitLog[];
-};
-
+// isHabitForToday()
 export const isHabitForToday = (habit: Habit): boolean => {
-  try {
-    const todayDate = getTodayDate();
-    const todayWeekDay = getTodayWeekday();
+  const today = getTodayDate();
+  const weekday = getTodayWeekday(); // 0-6
+  const dateNum = Number(today.slice(8, 10)); // 2025-11-21T06:15:32.000Z return(21)
 
-    switch (habit.schedule.type) {
-      case "daily":
-        return true;
+  switch (habit.frequency) {
+    case "daily":
+      return true;
+    case "weekly":
+      return habit.customFrequency?.daysOfWeek.includes(weekday) ?? false;
+    case "monthly":
+      return habit.customFrequency?.daysOfMonth.includes(dateNum) ?? false;
+    case "custom": {
+      const matchWeek =
+        habit.customFrequency?.daysOfWeek.includes(weekday) ?? false;
+      const matchMonth =
+        habit.customFrequency?.daysOfMonth.includes(dateNum) ?? false;
 
-      case "weekly":
-        return habit.schedule.days?.includes(todayWeekDay) ?? false;
-
-      case "specific":
-        return habit.schedule.date === todayDate;
-
-      default:
-        return false;
+      return matchWeek || matchMonth;
     }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log("Error getting is Habit For Today", error.message);
-    }
-    return false;
+
+    default:
+      return false;
   }
 };
 
-export const isHabitCompletedToday = (habit: Habit) => {
-  const today = getTodayDate();
-  const log = habit.logs.find((l) => l.date === today);
+// isHabitCompletedToday()
+export const isHabitCompletedToday = (
+  habit: Habit,
+  logs: HabitLog[]
+): boolean => {
+  const today = getTodayDate(); // YYYY-MM-DD
 
-  const completed = log?.count ?? 0;
-  const required = habit.frequency.timesPerDay;
+  const log = logs.find((l) => {
+    const logDate = new Date(l.date).toISOString().slice(0, 10);
 
-  return completed >= required;
+    return (
+      String(l.habit) === String(habit._id) &&
+      logDate === today &&
+      l.completed === true
+    );
+  });
+
+  return Boolean(log);
 };
 
-export const getTodayHabit = (habit: Habit[]): Habit[] => {
-  return habit.filter(
-    (habit) => isHabitForToday(habit) && !isHabitCompletedToday(habit)
+// getTodayHabits()
+export const getTodayHabits = (habits: Habit[], logs: HabitLog[]): Habit[] => {
+  return habits.filter(
+    (habit) => isHabitForToday(habit) && !isHabitCompletedToday(habit, logs)
   );
 };
