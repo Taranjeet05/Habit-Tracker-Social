@@ -1,23 +1,17 @@
 import { create } from "zustand";
-
-interface HabitUI {
-  _id: string;
-  title: string;
-  color: "Green" | "Blue" | "Purple" | "Teal" | "Orange" | "Red" | "Yellow";
-  archived: boolean;
-}
+import { Habit } from "../types/Habit";
 
 interface HabitsStoreState {
-  habits: HabitUI[]; // Cache UI list
+  habits: Habit[]; // Cache UI list
   selectedHabitId: string | null; // For viewing and editing 1 habit
   filter: "all" | "active" | "archived"; // For filtering habits on UI
   isCreateModalOpen: boolean;
   isEditModalOpen: boolean;
 
   // --- Actions ---
-  setHabits: (habits: HabitUI[]) => void;
-  addHabit: (habit: HabitUI) => void;
-  updateHabit: (habitId: string, updatedData: Partial<HabitUI>) => void;
+  setHabits: (habits: Habit[]) => void;
+  addHabit: (habit: Habit) => void;
+  updateHabit: (habitId: string, updatedData: Partial<Habit>) => void;
   deleteHabit: (habitId: string) => void;
   selectHabit: (habitId: string | null) => void;
   setFilter: (filter: "all" | "active" | "archived") => void;
