@@ -1,4 +1,4 @@
-import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
+import { SidebarProvider } from "../ui/sidebar";
 import AppSideBar from "./AppSideBar";
 
 interface MainLayoutProps {
@@ -13,7 +13,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
         <main className="flex-1">
           <div className="container px-4 py-6 max-w-7xl mx-auto">
-            <SidebarTrigger />
             {children}
           </div>
         </main>
