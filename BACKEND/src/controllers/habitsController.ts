@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import debug from "debug";
 import Habit from "../models/Habit.js";
 import { createHabitsSchema } from "../validations/habits.schema.js";
+import { isCompletedToday, isHabitForToday } from "../helpers/habitFilters.js";
 const log = debug("app:habitsController");
 
 export const createHabit = async (
@@ -53,6 +54,7 @@ export const createHabit = async (
   }
 };
 
+// give ALL the HABITS of the USER -- allHabitsByUser
 export const getHabitsByUser = async (
   req: Request,
   res: Response
@@ -250,6 +252,90 @@ export const deleteHabit = async (
     log("Error deleting Habit", errorMessage);
     res.status(500).json({
       message: "Failed to delete Habit",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
+
+// only return today habit
+export const getTodayHabits = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.user?._id as string;
+
+    if (!userId) {
+      res.status(401).json({
+        message: "You need to login first",
+      });
+      return;
+    }
+
+    const habits = await Habit.find({ user: userId }).lean();
+
+    //filter
+    const todayHabits = [];
+
+    for (const habit of habits) {
+      const shouldShow =
+        isHabitForToday(habit) && !(await isCompletedToday(habit, userId));
+
+      if (shouldShow) todayHabits.push(habit);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Today's habits fetched successfully",
+      data: todayHabits,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Error Getting Today's Habit", errorMessage);
+    res.status(500).json({
+      message: "Failed to get Today's Habit",
+      error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+    });
+  }
+};
+
+export const getAllHabitsExceptToday = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.user?._id as string;
+    if (!userId) {
+      res.status(401).json({
+        message: "You need to login first",
+      });
+      return;
+    }
+
+    const habits = await Habit.find({ user: userId }).lean();
+    const dashboardHabits = [];
+
+    for (const habit of habits) {
+      const scheduledForToday = isHabitForToday(habit);
+      const completedToday = await isCompletedToday(habit, userId);
+
+      // Show habits that are NOT scheduled for today
+      // OR habits that ARE scheduled for today AND completed
+      if (!scheduledForToday || (scheduledForToday && completedToday)) {
+        dashboardHabits.push(habit);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Dashboard habits fetched successfully",
+      data: dashboardHabits,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : undefined;
+    log("Failed to get dashboard habits", errorMessage);
+    res.status(500).json({
+      message: "Failed to get dashboard habits",
       error: process.env.NODE_ENV === "development" ? errorMessage : undefined,
     });
   }
