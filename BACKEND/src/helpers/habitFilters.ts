@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import HabitLog from "../models/HabitLog.js";
-import { AnyArray } from "mongoose";
 
 //**
 // * checking if habit is scheduled for today based on its frequency rules ::
