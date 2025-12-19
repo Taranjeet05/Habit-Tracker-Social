@@ -73,14 +73,14 @@ export const deleteHabit = async (
   return data;
 };
 
-export const getTodayHabits = async (): Promise<ApiResponse<HabitResponse>> => {
-  const { data } = await API.get<ApiResponse<HabitResponse>>("/habits/today");
-  return data;
+// GET today habits
+export const getTodayHabits = async (): Promise<Habit[]> => {
+  const { data } = await API.get<ApiResponse<Habit[]>>("/habits/today");
+  return data.data || [];
 };
 
-export const getAllHabitsExceptToday = async (): Promise<
-  ApiResponse<HabitResponse>
-> => {
-  const { data } = await API.get<ApiResponse<HabitResponse>>("/habits/all");
-  return data;
+// GET all habits except today
+export const getAllHabitsExceptToday = async (): Promise<Habit[]> => {
+  const { data } = await API.get<ApiResponse<Habit[]>>("/habits/all");
+  return data.data || [];
 };
