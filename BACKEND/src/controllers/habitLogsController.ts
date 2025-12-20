@@ -577,7 +577,7 @@ export const calculateStreakForHabit = async (req: Request, res: Response) => {
     }
     // fetch the habit by its ID and check if it belongs to the user (lean + typed)
     const habit = await Habit.findById(habitId).lean<IHabit>();
-    if (!habit || habit.user.toString() !== userId) {
+    if (!habit || String(habit.user) !== String(userId)) {
       res.status(404).json({
         message: "Habit Not Found or not Owned by You",
       });
