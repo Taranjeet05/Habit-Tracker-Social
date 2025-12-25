@@ -19,8 +19,8 @@ export const habitFormSchema = z
 
     customFrequency: z
       .object({
-        dayOfWeek: z.array(z.number()).optional(),
-        dayOfMonth: z.array(z.number()).optional(),
+        daysOfWeek: z.array(z.number()).optional(),
+        daysOfMonth: z.array(z.number()).optional(),
       })
       .optional(),
 
