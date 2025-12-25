@@ -5,7 +5,7 @@ import { IHabit } from "../../../BACKEND/src/types/index";
 export interface Habit {
   _id: string;
   title: string;
-  description: string;
+  description?: string;
   color: "Green" | "Blue" | "Purple" | "Teal" | "Orange" | "Red" | "Yellow";
   user: string;
   frequency: "daily" | "weekly" | "monthly" | "custom";
@@ -29,8 +29,10 @@ export interface HabitResponse {
   data?: IHabit | IHabit[];
 }
 
+export type CreateHabitPayload = Omit<Habit, "_id" | "user" | "startDate" | "archived">;
+
 export const createHabit = async (
-  habitData: Habit
+  habitData: CreateHabitPayload
 ): Promise<ApiResponse<HabitResponse>> => {
   const { data } = await API.post<ApiResponse<HabitResponse>>(
     "/habits/",
